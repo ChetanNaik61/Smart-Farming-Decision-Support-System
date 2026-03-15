@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Farming DSS — AI-Powered Crop Intelligence</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="shortcut icon" href="/static/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --soil: #2C1A0E;
+    --earth: #5C3D1E;
+    --clay: #8B5E3C;
+    --leaf: #2D5A27;
+    --sprout: #4A7C3F;
+    --grass: #6AAB5E;
+    --sun: #E8A825;
+    --wheat: #D4A843;
+    --cream: #F5EDD8;
+    --fog: #EDF2E8;
+    --white: #FAFAF7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--soil);
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    padding: 1.2rem 2.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(250,250,247,0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(44,26,14,0.08);
+    transition: all 0.3s;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600;
+    color: var(--leaf);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--soil); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.9rem; font-weight: 500; color: var(--earth);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--leaf); }
+  .nav-cta {
+    background: var(--leaf); color: var(--cream);
+    padding: 0.6rem 1.5rem; border-radius: 100px;
+    font-size: 0.88rem; font-weight: 600;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .nav-cta:hover { background: var(--sprout); transform: translateY(-1px); }
+
+  /* ─── HERO ────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 7rem 2rem 4rem;
+    background: 
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(74,124,63,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(232,168,37,0.08) 0%, transparent 60%),
+      var(--white);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234A7C3F' fill-opacity='0.04'%3E%3Ccircle cx='3' cy='3' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(74,124,63,0.1); border: 1px solid rgba(74,124,63,0.2);
+    color: var(--leaf); border-radius: 100px;
+    padding: 0.4rem 1.1rem; font-size: 0.82rem; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--soil);
+    margin-bottom: 1rem;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+  .hero-title em {
+    font-style: italic; color: var(--leaf);
+    display: block;
+  }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--clay); max-width: 560px;
+    line-height: 1.7; margin-bottom: 2.5rem;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+  .hero-actions {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.7s ease 0.3s both;
+  }
+  .btn-primary {
+    background: var(--leaf); color: var(--cream);
+    padding: 0.9rem 2.2rem; border-radius: 100px;
+    font-size: 1rem; font-weight: 600;
+    text-decoration: none; border: none; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: all 0.25s; box-shadow: 0 4px 20px rgba(45,90,39,0.3);
+  }
+  .btn-primary:hover { background: var(--sprout); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(45,90,39,0.35); }
+  .btn-secondary {
+    background: transparent; color: var(--earth);
+    padding: 0.9rem 2.2rem; border-radius: 100px;
+    font-size: 1rem; font-weight: 500;
+    text-decoration: none; border: 2px solid rgba(92,61,30,0.2);
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: all 0.25s;
+  }
+  .btn-secondary:hover { border-color: var(--leaf); color: var(--leaf); background: rgba(74,124,63,0.06); }
+
+  /* ─── STATS BAR ───────────────────────────── */
+  .stats-bar {
+    display: flex; justify-content: center; gap: 0;
+    margin-top: 4rem; flex-wrap: wrap;
+    animation: fadeUp 0.7s ease 0.4s both;
+  }
+  .stat {
+    padding: 1.5rem 3rem; text-align: center;
+    border-right: 1px solid rgba(44,26,14,0.1);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 700;
+    color: var(--leaf);
+  }
+  .stat-label { font-size: 0.82rem; color: var(--clay); margin-top: 0.2rem; }
+
+  /* ─── FEATURES ────────────────────────────── */
+  .section { padding: 6rem 2rem; }
+  .section-header { text-align: center; margin-bottom: 3.5rem; }
+  .section-tag {
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--grass); font-weight: 600; margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif; font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700; color: var(--soil); line-height: 1.2;
+  }
+  .section-title em { font-style: italic; color: var(--leaf); }
+
+  .features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem; max-width: 1100px; margin: 0 auto;
+  }
+  .feature-card {
+    background: var(--fog); border-radius: 20px;
+    padding: 2.2rem; border: 1px solid rgba(74,124,63,0.1);
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--leaf), var(--grass));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(44,26,14,0.1); }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--leaf), var(--grass));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 1.2rem;
+  }
+  .feature-name {
+    font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600;
+    color: var(--soil); margin-bottom: 0.6rem;
+  }
+  .feature-desc { font-size: 0.92rem; color: var(--clay); line-height: 1.6; }
+
+  /* ─── WORKFLOW ────────────────────────────── */
+  .workflow { background: var(--soil); color: var(--cream); padding: 6rem 2rem; }
+  .workflow .section-title { color: var(--cream); }
+  .workflow .section-title em { color: var(--wheat); }
+  .steps { display: flex; gap: 0; max-width: 900px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+  .step {
+    flex: 1; min-width: 160px; text-align: center; padding: 2rem 1rem;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute; right: -10px; top: 50%; transform: translateY(-40%);
+    font-size: 1.5rem; color: var(--wheat); opacity: 0.4;
+  }
+  .step-num {
+    width: 50px; height: 50px; border-radius: 50%;
+    border: 2px solid var(--wheat);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700;
+    color: var(--wheat); margin: 0 auto 1rem;
+  }
+  .step-title { font-weight: 600; font-size: 0.9rem; color: var(--cream); margin-bottom: 0.4rem; }
+  .step-desc { font-size: 0.8rem; color: rgba(245,237,216,0.6); line-height: 1.5; }
+
+  /* ─── CTA SECTION ─────────────────────────── */
+  .cta-section {
+    padding: 6rem 2rem; text-align: center;
+    background: linear-gradient(135deg, var(--fog) 0%, var(--white) 100%);
+  }
+  .cta-box {
+    background: linear-gradient(135deg, var(--leaf), var(--sprout));
+    border-radius: 28px; padding: 4rem 3rem;
+    max-width: 700px; margin: 0 auto;
+    color: var(--cream); position: relative; overflow: hidden;
+  }
+  .cta-box::before {
+    content: '🌱';
+    position: absolute; right: 2rem; top: 50%; transform: translateY(-50%);
+    font-size: 8rem; opacity: 0.1;
+  }
+  .cta-box h2 {
+    font-family: 'Fraunces', serif; font-size: 2.2rem;
+    font-weight: 700; margin-bottom: 0.8rem;
+  }
+  .cta-box p { font-size: 1rem; opacity: 0.85; margin-bottom: 2rem; }
+  .btn-white {
+    background: var(--cream); color: var(--leaf);
+    padding: 0.9rem 2.5rem; border-radius: 100px;
+    font-size: 1rem; font-weight: 700;
+    text-decoration: none; display: inline-block;
+    transition: all 0.25s;
+  }
+  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+
+  /* ─── FOOTER ──────────────────────────────── */
+  footer {
+    background: var(--soil); color: rgba(245,237,216,0.6);
+    padding: 2rem; text-align: center; font-size: 0.85rem;
+  }
+  footer strong { color: var(--wheat); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    nav { padding: 1rem 1.2rem; }
+    .nav-links { display: none; }
+    .stat { padding: 1.2rem 1.5rem; }
+    .step:not(:last-child)::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">🌿 Smart<span>Farm</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">How It Works</a></li>
+    <li><a href="/assistant">ಕನ್ನಡ ಸಹಾಯ</a></li>
+  </ul>
+  <a href="/analyze" class="nav-cta">Start Analysis →</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">🤖 AI-Powered Agriculture</div>
+  <h1 class="hero-title">
+    Smart Farming
+    <em>Decision Support</em>
+  </h1>
+  <p class="hero-sub">
+    Enter your soil test data and get intelligent crop recommendations powered by Machine Learning — with Kannada voice assistance for every farmer.
+  </p>
+  <div class="hero-actions">
+    <a href="/analyze" class="btn-primary">🔬 Analyze My Soil</a>
+    <a href="/assistant" class="btn-secondary">🎤 ಕನ್ನಡ ಸಹಾಯಕ</a>
+  </div>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num">12+</div><div class="stat-label">Crop Types</div></div>
+    <div class="stat"><div class="stat-num">95%</div><div class="stat-label">ML Accuracy</div></div>
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">Soil Parameters</div></div>
+    <div class="stat"><div class="stat-num">ಕನ್ನಡ</div><div class="stat-label">Voice Assistant</div></div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="section-header">
+    <div class="section-tag">What We Offer</div>
+    <h2 class="section-title">Precision Agriculture<br><em>Made Simple</em></h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🧪</div>
+      <div class="feature-name">Soil Lab Analysis</div>
+      <div class="feature-desc">Enter data exactly as shown on your soil lab report — pH, EC, OC, NPK, CEC — at two soil depths for precise analysis.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌾</div>
+      <div class="feature-name">AI Crop Recommendation</div>
+      <div class="feature-desc">Random Forest ML model trained on thousands of soil profiles recommends the best crop with confidence score and alternatives.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌿</div>
+      <div class="feature-name">Fertilizer Guidance</div>
+      <div class="feature-desc">Get specific NPK ratios, micronutrient recommendations, and organic manure suggestions tailored to your soil conditions.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎤</div>
+      <div class="feature-name">Kannada Voice Assistant</div>
+      <div class="feature-desc">Ask questions in Kannada — by voice or text — and receive answers with voice output. Built for Karnataka's farming community.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <div class="feature-name">Soil Health Dashboard</div>
+      <div class="feature-desc">Visual breakdown of your soil's strengths and deficiencies with actionable improvement suggestions.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <div class="feature-name">Mobile Responsive</div>
+      <div class="feature-desc">Works seamlessly on mobile phones — farmers can access recommendations directly from the field.</div>
+    </div>
+  </div>
+</section>
+
+<section class="workflow" id="workflow">
+  <div class="section-header">
+    <div class="section-tag" style="color: var(--wheat);">Simple Process</div>
+    <h2 class="section-title">How It <em>Works</em></h2>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Enter Soil Data</div>
+      <div class="step-desc">Fill in values from your soil lab report</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">AI Analysis</div>
+      <div class="step-desc">Random Forest model processes 16 parameters</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Get Results</div>
+      <div class="step-desc">Best crop, confidence %, alternatives</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-title">Ask Questions</div>
+      <div class="step-desc">Chat in Kannada with voice support</div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-box">
+    <h2>Ready to Analyze Your Soil?</h2>
+    <p>Enter your soil test values and let our AI recommend the most profitable crop for your land.</p>
+    <a href="/analyze" class="btn-white">Start Soil Analysis →</a>
+  </div>
+</section>
+
+<footer>
+  <p>Smart Farming Decision Support System — Final Year Engineering Project</p>
+  <p style="margin-top: 0.5rem;">Built with <strong>FastAPI</strong> · <strong>Random Forest ML</strong> · <strong>Kannada NLP</strong></p>
+</footer>
+
+</body>
+</html>

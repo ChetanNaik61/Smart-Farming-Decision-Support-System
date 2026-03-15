@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soil Analysis — Smart Farming DSS</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="shortcut icon" href="/static/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --soil: #2C1A0E; --earth: #5C3D1E; --clay: #8B5E3C;
+    --leaf: #2D5A27; --sprout: #4A7C3F; --grass: #6AAB5E;
+    --sun: #E8A825; --wheat: #D4A843;
+    --cream: #F5EDD8; --fog: #EDF2E8; --white: #FAFAF7;
+    --red: #C0392B; --orange: #E67E22;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--fog); color: var(--soil); min-height: 100vh; }
+
+  nav {
+    background: rgba(250,250,247,0.95); backdrop-filter: blur(12px);
+    padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(44,26,14,0.08); position: sticky; top: 0; z-index: 50;
+  }
+  .nav-logo { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; color: var(--leaf); text-decoration: none; }
+  .nav-logo span { color: var(--soil); }
+  .nav-back { color: var(--clay); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
+  .nav-back:hover { color: var(--leaf); }
+
+  .page-header {
+    background: linear-gradient(135deg, var(--leaf) 0%, var(--sprout) 100%);
+    color: var(--cream); padding: 2.5rem 2rem; text-align: center;
+  }
+  .page-header h1 { font-family: 'Fraunces', serif; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 700; }
+  .page-header p { font-size: 0.95rem; opacity: 0.8; margin-top: 0.5rem; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 2rem; }
+
+  /* ─── FORM CARD ───────────────────────────── */
+  .card {
+    background: var(--white); border-radius: 20px;
+    padding: 2rem; margin-bottom: 1.5rem;
+    border: 1px solid rgba(74,124,63,0.12);
+    box-shadow: 0 2px 16px rgba(44,26,14,0.06);
+  }
+  .card-title {
+    font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600;
+    color: var(--soil); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .card-title span { font-size: 1.3rem; }
+
+  /* ─── SOIL TABLE ──────────────────────────── */
+  .soil-table-wrap { overflow-x: auto; }
+  table.soil-table {
+    width: 100%; border-collapse: collapse; font-size: 0.92rem;
+  }
+  .soil-table th {
+    background: var(--leaf); color: var(--cream);
+    padding: 0.8rem 1rem; text-align: center;
+    font-weight: 600; font-size: 0.85rem; letter-spacing: 0.02em;
+  }
+  .soil-table th:first-child { text-align: left; border-radius: 8px 0 0 0; }
+  .soil-table th:last-child { border-radius: 0 8px 0 0; }
+  .soil-table tr:nth-child(even) td { background: var(--fog); }
+  .soil-table td {
+    padding: 0.7rem 1rem; border-bottom: 1px solid rgba(74,124,63,0.1);
+    vertical-align: middle;
+  }
+  .soil-table td:first-child { font-weight: 500; color: var(--earth); white-space: nowrap; }
+  .soil-table input[type="number"] {
+    width: 100%; padding: 0.55rem 0.8rem;
+    border: 1.5px solid rgba(74,124,63,0.2); border-radius: 8px;
+    font-size: 0.92rem; font-family: 'DM Sans', sans-serif;
+    background: var(--white); color: var(--soil); text-align: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -moz-appearance: textfield;
+  }
+  .soil-table input[type="number"]::-webkit-outer-spin-button,
+  .soil-table input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .soil-table input:focus {
+    outline: none; border-color: var(--leaf);
+    box-shadow: 0 0 0 3px rgba(45,90,39,0.12);
+  }
+  .unit-badge {
+    display: inline-block;
+    background: rgba(74,124,63,0.1); color: var(--sprout);
+    border-radius: 4px; padding: 0.1rem 0.4rem;
+    font-size: 0.75rem; margin-left: 0.3rem; font-weight: 500;
+  }
+
+  /* ─── EXTRA INPUTS ────────────────────────── */
+  .extra-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .field-group label {
+    display: block; font-size: 0.85rem; font-weight: 500;
+    color: var(--earth); margin-bottom: 0.4rem;
+  }
+  .field-group input {
+    width: 100%; padding: 0.7rem 1rem;
+    border: 1.5px solid rgba(74,124,63,0.2); border-radius: 10px;
+    font-size: 0.95rem; font-family: 'DM Sans', sans-serif;
+    background: var(--white); color: var(--soil);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -moz-appearance: textfield;
+  }
+  .field-group input::-webkit-outer-spin-button,
+  .field-group input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .field-group input:focus {
+    outline: none; border-color: var(--leaf);
+    box-shadow: 0 0 0 3px rgba(45,90,39,0.12);
+  }
+
+  /* ─── SUBMIT BUTTON ───────────────────────── */
+  .btn-analyze {
+    width: 100%; padding: 1.1rem;
+    background: linear-gradient(135deg, var(--leaf), var(--sprout));
+    color: var(--cream); border: none; border-radius: 14px;
+    font-size: 1.05rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+    cursor: pointer; transition: all 0.25s; margin-top: 1rem;
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    box-shadow: 0 4px 20px rgba(45,90,39,0.3);
+  }
+  .btn-analyze:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(45,90,39,0.4); }
+  .btn-analyze:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+  /* ─── LOADING ─────────────────────────────── */
+  .loading {
+    display: none; text-align: center; padding: 3rem;
+    flex-direction: column; align-items: center; gap: 1rem;
+  }
+  .spinner {
+    width: 50px; height: 50px; border-radius: 50%;
+    border: 4px solid rgba(74,124,63,0.15);
+    border-top-color: var(--leaf);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── RESULTS ─────────────────────────────── */
+  #results { display: none; }
+  .results-hero {
+    background: linear-gradient(135deg, var(--leaf), var(--sprout));
+    border-radius: 20px; padding: 2.5rem; color: var(--cream);
+    display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.5s ease;
+  }
+  .crop-circle {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 3px solid rgba(255,255,255,0.3);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    flex-shrink: 0; position: relative;
+  }
+  .crop-circle .crop-emoji { font-size: 2.5rem; }
+  .crop-circle .crop-conf { font-size: 0.8rem; opacity: 0.8; margin-top: 0.2rem; }
+  .crop-info { flex: 1; }
+  .crop-label { font-size: 0.85rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.08em; }
+  .crop-name-big {
+    font-family: 'Fraunces', serif; font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700; line-height: 1; margin: 0.2rem 0;
+  }
+  .crop-name-kan { font-size: 1.2rem; opacity: 0.8; font-style: italic; }
+  .crop-desc-text { font-size: 0.92rem; opacity: 0.85; margin-top: 0.8rem; max-width: 400px; line-height: 1.5; }
+
+  /* ─── CONFIDENCE RING ─────────────────────── */
+  .conf-ring-wrap { text-align: center; }
+  .conf-ring-wrap svg { transform: rotate(-90deg); }
+  .conf-ring-label {
+    font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 700;
+    color: var(--cream); margin-top: -0.5rem;
+  }
+  .conf-ring-sub { font-size: 0.78rem; opacity: 0.7; }
+
+  .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  .alt-crops { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .alt-card {
+    flex: 1; min-width: 140px;
+    background: var(--fog); border-radius: 14px;
+    padding: 1.2rem; text-align: center;
+    border: 1.5px solid rgba(74,124,63,0.12);
+    transition: all 0.2s;
+  }
+  .alt-card:hover { border-color: var(--leaf); transform: translateY(-2px); }
+  .alt-card .alt-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+  .alt-card .alt-name { font-weight: 600; color: var(--soil); }
+  .alt-card .alt-kan { font-size: 0.82rem; color: var(--clay); }
+  .alt-card .alt-conf {
+    margin-top: 0.5rem; font-size: 0.8rem; font-weight: 600;
+    color: var(--sprout); background: rgba(74,124,63,0.1);
+    border-radius: 20px; padding: 0.2rem 0.6rem; display: inline-block;
+  }
+
+  .fertilizer-box {
+    background: linear-gradient(135deg, rgba(232,168,37,0.1), rgba(212,168,67,0.05));
+    border: 1.5px solid rgba(232,168,37,0.25);
+    border-radius: 14px; padding: 1.4rem;
+  }
+  .fertilizer-box .title { font-weight: 600; color: var(--earth); margin-bottom: 0.6rem; }
+  .fertilizer-box p { font-size: 0.9rem; color: var(--clay); line-height: 1.6; }
+
+  .soil-notes { list-style: none; }
+  .soil-notes li {
+    padding: 0.6rem 0; border-bottom: 1px solid rgba(74,124,63,0.1);
+    font-size: 0.9rem; display: flex; align-items: flex-start; gap: 0.6rem;
+  }
+  .soil-notes li::before { content: '●'; color: var(--grass); flex-shrink: 0; margin-top: 0.05rem; }
+
+  .ask-kannada-btn {
+    display: block; width: 100%; text-align: center;
+    background: var(--soil); color: var(--cream);
+    padding: 1rem; border-radius: 14px; font-size: 1rem; font-weight: 600;
+    text-decoration: none; margin-top: 1.5rem;
+    transition: all 0.25s;
+  }
+  .ask-kannada-btn:hover { background: var(--earth); transform: translateY(-2px); }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    .results-grid { grid-template-columns: 1fr; }
+    .extra-inputs { grid-template-columns: 1fr; }
+    .results-hero { flex-direction: column; text-align: center; }
+    .crop-desc-text { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">🌿 Smart<span>Farm</span></a>
+  <a href="/" class="nav-back">← Home</a>
+</nav>
+
+<div class="page-header">
+  <h1>🧪 Soil Analysis & Crop Recommendation</h1>
+  <p>Enter your soil lab report values below to get AI-powered crop recommendations</p>
+</div>
+
+<div class="container">
+  <!-- FORM -->
+  <div id="formSection">
+    <div class="card">
+      <div class="card-title"><span>📋</span> Soil Test Parameters (Laboratory Report)</div>
+      <div class="soil-table-wrap">
+        <table class="soil-table">
+          <thead>
+            <tr>
+              <th>Parameters</th>
+              <th>Depth 1 <br><small style="font-weight:400;opacity:0.8">(0 – 0.6 ft)</small></th>
+              <th>Depth 2 <br><small style="font-weight:400;opacity:0.8">(0.6 – 1 ft)</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>pH (1:2.5)</td>
+              <td><input type="number" id="ph_d1" step="0.01" min="3" max="10" placeholder="e.g. 7.83" value="7.83"></td>
+              <td><input type="number" id="ph_d2" step="0.01" min="3" max="10" placeholder="e.g. 7.60" value="7.60"></td>
+            </tr>
+            <tr>
+              <td>EC (1:2.5) <span class="unit-badge">ds/m</span></td>
+              <td><input type="number" id="ec_d1" step="0.01" min="0" max="5" placeholder="e.g. 0.14" value="0.14"></td>
+              <td><input type="number" id="ec_d2" step="0.01" min="0" max="5" placeholder="e.g. 0.21" value="0.21"></td>
+            </tr>
+            <tr>
+              <td>OC (Organic Carbon) <span class="unit-badge">%</span></td>
+              <td><input type="number" id="oc_d1" step="0.01" min="0" max="5" placeholder="e.g. 0.21" value="0.21"></td>
+              <td><input type="number" id="oc_d2" step="0.01" min="0" max="5" placeholder="e.g. 0.24" value="0.24"></td>
+            </tr>
+            <tr>
+              <td>N (Nitrogen) <span class="unit-badge">kg/ha</span></td>
+              <td><input type="number" id="n_d1" step="0.01" min="0" max="500" placeholder="e.g. 100.35" value="100.35"></td>
+              <td><input type="number" id="n_d2" step="0.01" min="0" max="500" placeholder="e.g. 112.89" value="112.89"></td>
+            </tr>
+            <tr>
+              <td>P₂O₅ (Phosphorus) <span class="unit-badge">kg/ha</span></td>
+              <td><input type="number" id="p2o5_d1" step="0.01" min="0" max="500" placeholder="e.g. 18.64" value="18.64"></td>
+              <td><input type="number" id="p2o5_d2" step="0.01" min="0" max="500" placeholder="e.g. 21.18" value="21.18"></td>
+            </tr>
+            <tr>
+              <td>K₂O (Potassium) <span class="unit-badge">kg/ha</span></td>
+              <td><input type="number" id="k2o_d1" step="0.01" min="0" max="1000" placeholder="e.g. 134.4" value="134.4"></td>
+              <td><input type="number" id="k2o_d2" step="0.01" min="0" max="1000" placeholder="e.g. 123.6" value="123.6"></td>
+            </tr>
+            <tr>
+              <td>CEC <span class="unit-badge">meq/100g</span></td>
+              <td><input type="number" id="cec_d1" step="0.01" min="0" max="60" placeholder="e.g. 13.45" value="13.45"></td>
+              <td><input type="number" id="cec_d2" step="0.01" min="0" max="60" placeholder="e.g. 10.30" value="10.30"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>🌡️</span> Environmental Parameters</div>
+      <div class="extra-inputs">
+        <div class="field-group">
+          <label>Temperature (°C)</label>
+          <input type="number" id="temperature" step="0.1" min="-10" max="60" placeholder="e.g. 28" value="28">
+        </div>
+        <div class="field-group">
+          <label>Soil Moisture (%)</label>
+          <input type="number" id="moisture" step="0.1" min="0" max="100" placeholder="e.g. 55" value="55">
+        </div>
+      </div>
+      <button class="btn-analyze" onclick="submitAnalysis()">
+        🔬 Get Crop Recommendation
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p style="color:var(--clay); font-size:0.95rem">Analyzing soil parameters with AI model...</p>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="results-hero" id="resultsHero">
+      <div style="flex:1">
+        <div class="crop-label">🏆 Best Crop Recommendation</div>
+        <div class="crop-name-big" id="rCropName">—</div>
+        <div class="crop-name-kan" id="rCropKan">—</div>
+        <div class="crop-desc-text" id="rCropDesc">—</div>
+      </div>
+      <div class="conf-ring-wrap">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="8"/>
+          <circle id="confCircle" cx="50" cy="50" r="42" fill="none" stroke="#F5EDD8" stroke-width="8"
+            stroke-dasharray="264" stroke-dashoffset="264" stroke-linecap="round"
+            style="transition: stroke-dashoffset 1.2s cubic-bezier(0.25,1,0.5,1)"/>
+        </svg>
+        <div class="conf-ring-label" id="rConfNum">0%</div>
+        <div class="conf-ring-sub">Confidence</div>
+      </div>
+    </div>
+
+    <div class="results-grid">
+      <div class="card">
+        <div class="card-title"><span>🌿</span> Alternative Crops</div>
+        <div class="alt-crops" id="altCrops"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>🌱</span> Soil Health Notes</div>
+        <ul class="soil-notes" id="soilNotes"></ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>🧴</span> Fertilizer Recommendation</div>
+      <div class="fertilizer-box">
+        <div class="title">Suggested Fertilizer Plan</div>
+        <p id="rFertilizer">—</p>
+      </div>
+    </div>
+
+    <a href="/assistant" class="ask-kannada-btn">
+      🎤 ಇನ್ನಷ್ಟು ಪ್ರಶ್ನೆಗಳಿಗೆ ಕನ್ನಡ ಸಹಾಯಕ ಬಳಸಿ →
+    </a>
+
+    <div style="margin-top:1.5rem; text-align:center;">
+      <button onclick="resetForm()" style="background:none;border:1.5px solid rgba(74,124,63,0.3);color:var(--sprout);padding:0.7rem 2rem;border-radius:100px;cursor:pointer;font-size:0.9rem;font-family:'DM Sans',sans-serif;font-weight:500;transition:all 0.2s;">
+        ↺ Analyze Again
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+
+async function submitAnalysis() {
+  const fields = ['ph_d1','ec_d1','oc_d1','n_d1','p2o5_d1','k2o_d1','cec_d1',
+                  'ph_d2','ec_d2','oc_d2','n_d2','p2o5_d2','k2o_d2','cec_d2',
+                  'temperature','moisture'];
+  
+  const data = {};
+  for (const f of fields) {
+    const val = parseFloat(document.getElementById(f).value);
+    if (isNaN(val)) { alert(`Please fill in all fields. Missing: ${f}`); return; }
+    data[f] = val;
+  }
+
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('results').style.display = 'none';
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/recommend`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const result = await resp.json();
+    showResults(result);
+  } catch (err) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('formSection').style.display = 'block';
+    alert('Error: ' + err.message + '\n\nMake sure the backend server is running on port 8000.');
+  }
+}
+
+function showResults(r) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  document.getElementById('rCropName').textContent = r.icon + ' ' + r.best_crop;
+  document.getElementById('rCropKan').textContent = r.best_crop_kannada;
+  document.getElementById('rCropDesc').textContent = r.description;
+  document.getElementById('rFertilizer').textContent = r.fertilizer;
+
+  // Confidence ring
+  const conf = r.confidence;
+  document.getElementById('rConfNum').textContent = conf.toFixed(1) + '%';
+  const circumference = 264;
+  const offset = circumference - (conf / 100) * circumference;
+  setTimeout(() => { document.getElementById('confCircle').style.strokeDashoffset = offset; }, 100);
+
+  // Alternatives
+  const altEl = document.getElementById('altCrops');
+  altEl.innerHTML = r.alternatives.map(a => `
+    <div class="alt-card">
+      <div class="alt-emoji">${a.icon}</div>
+      <div class="alt-name">${a.crop}</div>
+      <div class="alt-kan">${a.kannada}</div>
+      <div class="alt-conf">${a.confidence.toFixed(1)}%</div>
+    </div>
+  `).join('');
+
+  // Soil notes
+  const notesEl = document.getElementById('soilNotes');
+  notesEl.innerHTML = r.soil_analysis.map(n => `<li>${n}</li>`).join('');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('formSection').style.display = 'block';
+}
+</script>
+</body>
+</html>
